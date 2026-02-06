@@ -5,6 +5,19 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val localProperties = java.util.Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.reader().use { reader ->
+        localProperties.load(reader)
+    }
+}
+
+val flutterVersionCode =
+    localProperties.getProperty("flutter.versionCode")?.toIntOrNull() ?: 1
+val flutterVersionName =
+    localProperties.getProperty("flutter.versionName") ?: "1.0"
+
 android {
     namespace = "com.example.a2t_offline"
     compileSdk = flutter.compileSdkVersion
@@ -26,8 +39,8 @@ android {
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        versionCode = flutterVersionCode
+        versionName = flutterVersionName
     }
 
     buildTypes {
