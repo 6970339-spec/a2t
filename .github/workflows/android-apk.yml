@@ -29,11 +29,39 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Write Android local.properties
+        run: |
+          mkdir -p android
+          echo "flutter.sdk=$FLUTTER_ROOT" > android/local.properties
+          echo "flutter.versionCode=1" >> android/local.properties
+          echo "flutter.versionName=1.0" >> android/local.properties
+
+      - name: Prepare build logs
+        run: |
+          mkdir -p build-logs
+          {
+            echo "## flutter --version"
+            flutter --version
+            echo ""
+            echo "## flutter doctor -v"
+            flutter doctor -v
+          } > build-logs/build.log
+
       - name: Build release APK
-        run: flutter build apk --release
+        run: |
+          set -o pipefail
+          flutter build apk --release 2>&1 | tee -a build-logs/build.log
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
+        if: success()
         with:
           name: app-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload build logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-logs
+          path: build-logs
