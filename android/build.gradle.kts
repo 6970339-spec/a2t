@@ -5,6 +5,19 @@ allprojects {
     }
 }
 
+val fallbackFlutterConfig =
+    mapOf(
+        "compileSdkVersion" to 34,
+        "minSdkVersion" to 21,
+        "targetSdkVersion" to 34,
+    )
+
+subprojects {
+    if (!extensions.extraProperties.has("flutter")) {
+        extensions.extraProperties["flutter"] = fallbackFlutterConfig
+    }
+}
+
 val newBuildDir: Directory =
     rootProject.layout.buildDirectory
         .dir("../../build")
